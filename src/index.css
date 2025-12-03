@@ -1,0 +1,347 @@
+/* stylelint-disable */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+    
+    /* Wisperina Futuristic Color System */
+    /* Primary - Vibrant Purple */
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 258 90% 76%;
+    --primary-dark: 258 90% 56%;
+    
+    /* Secondary - Deep Cyan */
+    --secondary: 200 98% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 200 98% 49%;
+    
+    /* Accent - Neon Pink */
+    --accent: 280 100% 70%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 280 100% 80%;
+    
+    /* Background - Deep Dark Blue */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    /* Surface - Dark with glassmorphism */
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 98%;
+    --surface-glass: 240 10% 12%;
+    
+    /* Popover */
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 98%;
+    
+    /* Muted */
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Border */
+    --border: 258 90% 66% / 0.2;
+    --border-glow: 258 90% 66% / 0.4;
+    --border-neon: 200 98% 49% / 0.6;
+    --input: 240 10% 15%;
+    --ring: 258 90% 66%;
+    
+    /* Neon Accents */
+    --neon-blue: 210 100% 60%;
+    --neon-green: 142 76% 36%;
+    --metallic-gold: 45 93% 58%;
+    
+    /* Chart colors */
+    --chart-1: 258 90% 66%;
+    --chart-2: 200 98% 49%;
+    --chart-3: 280 100% 70%;
+    --chart-4: 210 100% 60%;
+    --chart-5: 142 76% 36%;
+    
+    /* Sidebar */
+    --sidebar-background: 240 10% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 10% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 258 90% 66% / 0.2;
+    --sidebar-ring: 258 90% 66%;
+  }
+
+  .dark {
+    /* Dark mode uses same colors as default for Wisperina */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 258 90% 76%;
+    --secondary: 200 98% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 280 100% 70%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 258 90% 66% / 0.2;
+    --input: 240 10% 15%;
+    --ring: 258 90% 66%;
+    --chart-1: 258 90% 66%;
+    --chart-2: 200 98% 49%;
+    --chart-3: 280 100% 70%;
+    --chart-4: 210 100% 60%;
+    --chart-5: 142 76% 36%;
+    --sidebar-background: 240 10% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 10% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 258 90% 66% / 0.2;
+    --sidebar-ring: 258 90% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Wisperina Utility Classes */
+@layer utilities {
+  /* Glassmorphism Effects */
+  .glass-card {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: 0 8px 32px 0 hsl(var(--primary) / 0.15);
+  }
+
+  .glass-surface {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--secondary) / 0.15);
+  }
+
+  .glass-hover:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 8px 32px 0 hsl(var(--primary) / 0.25);
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .gradient-text-cyan {
+    background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--neon-blue)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Gradient Backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--neon-blue)));
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(var(--secondary)) 50%,
+      hsl(var(--accent)) 100%);
+  }
+
+  /* Glow Effects */
+  .glow-primary {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.4);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 40px hsl(var(--secondary) / 0.4);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 40px hsl(var(--accent) / 0.4);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.6);
+    transform: translateY(-2px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Neon Borders */
+  .border-neon {
+    border: 1px solid hsl(var(--secondary) / 0.6);
+  }
+
+  .border-glow {
+    border: 1px solid hsl(var(--primary) / 0.4);
+  }
+
+  /* Text Glow */
+  .text-glow {
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 20px hsl(var(--secondary) / 0.5);
+  }
+
+  /* Animations */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  /* GPU Acceleration */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+}
+
+/* Wisperina Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes orbit-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-fast {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 1;
+  }
+}
+
+@keyframes wave-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
