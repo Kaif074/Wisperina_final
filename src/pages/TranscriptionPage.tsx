@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
-import { supabase } from "@/db/supabase";
+import { supabase, isSupabaseConfigured } from "@/db/supabase";
 import { toast } from "sonner";
 import { TranscriptionResult, VideoPlayerRef } from "@/types/transcription";
 import { detectEmotion, type EmotionItem } from "@/services/emotion";
@@ -156,6 +156,9 @@ export default function TranscriptionPage() {
         requestBody.audioData = base64Data;
       }
 
+      if (!isSupabaseConfigured || !supabase) {
+        throw new Error("Service configuration missing: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY");
+      }
       const { data, error: invokeError } = await supabase.functions.invoke("transcribe-audio", {
         body: requestBody,
       });
