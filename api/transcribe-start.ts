@@ -63,7 +63,7 @@ export default async function handler(req: Request): Promise<Response> {
     const create = await fetch(`${baseUrl}/transcript`, {
       method: "POST",
       headers: { authorization: ASSEMBLYAI_API_KEY, "content-type": "application/json" },
-      body: JSON.stringify({ audio_url: uploadUrl, speech_model: "universal", speaker_labels: !!enableSpeakerLabels }),
+      body: JSON.stringify({ audio_url: uploadUrl, speaker_labels: !!enableSpeakerLabels }),
     });
     if (!create.ok) {
       const err = await create.text();
@@ -85,4 +85,3 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 }
-

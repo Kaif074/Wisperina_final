@@ -36,6 +36,41 @@ Wisperina is a React + Vite application that transcribes audio/video and optiona
    
    Dev opens at `http://127.0.0.1:5173/`.
 
+### Run with Vercel Functions (local fallback)
+
+If you prefer the built‑in Vercel fallback (no Supabase configuration), run the serverless functions locally:
+
+1. Install Vercel CLI:
+
+   ```bash
+   npm i -g vercel
+   ```
+
+2. Set env for the local runtime:
+
+   ```bash
+   vercel env add ASSEMBLYAI_API_KEY local
+   # paste your AssemblyAI key
+   ```
+
+   Alternatively, create a `.env.local` file for the Vercel CLI containing:
+
+   ```env
+   ASSEMBLYAI_API_KEY=<your-assemblyai-key>
+   ```
+
+3. Run Vercel dev:
+
+   ```bash
+   vercel dev
+   ```
+
+   This serves the React app and `/api/*` routes. Open `http://localhost:3000/`.
+
+Notes:
+- When Supabase envs are absent, the client automatically uses `/api/transcribe-start` + `/api/transcribe-status`.
+- Speaker labeling still works when `enableSpeakerLabels` is toggled on.
+
 4. Build for production:
    
    ```bash

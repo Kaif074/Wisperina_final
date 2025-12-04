@@ -174,7 +174,7 @@ export default function TranscriptionPage() {
         if (!id) throw new Error("Failed to start transcription");
 
         let final: any = null;
-        for (let attempt = 0; attempt < 60; attempt++) {
+        for (let attempt = 0; attempt < 120; attempt++) {
           await new Promise((r) => setTimeout(r, 2000));
           const stat = await fetch("/api/transcribe-status", {
             method: "POST",

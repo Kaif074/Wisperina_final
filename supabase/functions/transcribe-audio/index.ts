@@ -87,7 +87,6 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         audio_url: uploadUrl,
-        speech_model: "universal",
         speaker_labels: enableSpeakerLabels || false,
       }),
     });
