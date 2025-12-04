@@ -160,16 +160,33 @@ export default function TranscriptionPage() {
       let invokeError: any = null;
 
       if (!isSupabaseConfigured || !supabase) {
-        const resp = await fetch("/api/transcribe", {
+        const start = await fetch("/api/transcribe-start", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
         });
-        if (!resp.ok) {
-          const msg = await resp.text();
-          throw new Error(msg || "Transcription request failed");
+        if (!start.ok) {
+          const msg = await start.text();
+          throw new Error(msg || "Transcription start failed");
         }
-        data = await resp.json();
+        const started = await start.json();
+        const id = started.id as string;
+        if (!id) throw new Error("Failed to start transcription");
+
+        let final: any = null;
+        for (let attempt = 0; attempt < 60; attempt++) {
+          await new Promise((r) => setTimeout(r, 2000));
+          const stat = await fetch("/api/transcribe-status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, enableSpeakerLabels }),
+          });
+          if (!stat.ok) continue;
+          const payload = await stat.json();
+          if (payload?.status === "completed") { final = payload; break; }
+        }
+        if (!final) throw new Error("Transcription timeout - please try again");
+        data = final;
       } else {
         const r = await supabase.functions.invoke("transcribe-audio", {
           body: requestBody,
