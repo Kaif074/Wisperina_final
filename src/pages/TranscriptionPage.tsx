@@ -188,11 +188,25 @@ export default function TranscriptionPage() {
         if (!final) throw new Error("Transcription timeout - please try again");
         data = final;
       } else {
-        const r = await supabase.functions.invoke("transcribe-audio", {
-          body: requestBody,
+        const start = await supabase.functions.invoke("transcribe-start", {
+          body: { audioUrl: requestBody.audioUrl, audioData: requestBody.audioData },
         });
-        data = r.data;
-        invokeError = r.error;
+        invokeError = start.error;
+        const id = String(start.data?.id || "");
+        if (!id) throw new Error("Failed to start transcription");
+
+        let final: any = null;
+        for (let attempt = 0; attempt < 120; attempt++) {
+          await new Promise((r) => setTimeout(r, 2000));
+          const stat = await supabase.functions.invoke("transcribe-status", {
+            body: { id, enableSpeakerLabels },
+          });
+          if (stat.error) continue;
+          const payload = stat.data;
+          if (payload?.status === "completed") { final = payload; break; }
+        }
+        if (!final) throw new Error("Transcription timeout - please try again");
+        data = { success: true, text: final.text, utterances: final.utterances, speakerCount: final.speakerCount };
       }
 
       if (invokeError) {
