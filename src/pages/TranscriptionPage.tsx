@@ -213,25 +213,76 @@ export default function TranscriptionPage() {
         if (!final) throw new Error("Transcription timeout - please try again");
         data = final;
       } else {
-        const start = await supabase.functions.invoke("transcribe-start", {
-          body: { audioUrl: requestBody.audioUrl, audioData: requestBody.audioData },
-        });
-        invokeError = start.error;
-        const id = String(start.data?.id || "");
-        if (!id) throw new Error("Failed to start transcription");
+        let useDirect = false;
+        let id = "";
+        try {
+          const start = await supabase.functions.invoke("transcribe-start", {
+            body: { audioUrl: requestBody.audioUrl, audioData: requestBody.audioData },
+          });
+          invokeError = start.error;
+          id = String(start.data?.id || "");
+          if (!id) useDirect = true;
+        } catch {
+          useDirect = true;
+        }
+
+        if (useDirect) {
+          const assemblyKey = (import.meta.env.VITE_ASSEMBLYAI_API_KEY as string | undefined) ||
+            (typeof window !== "undefined" ? window.localStorage.getItem("ASSEMBLYAI_KEY") || undefined : undefined);
+          if (!assemblyKey) throw new Error("Missing AssemblyAI API key for local run");
+
+          let uploadUrl = requestBody.audioUrl;
+          if (requestBody.audioData) {
+            const base64 = requestBody.audioData.split(",")[1] || "";
+            const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+            const up = await fetch("https://api.assemblyai.com/v2/upload", {
+              method: "POST",
+              headers: { authorization: assemblyKey, "content-type": "application/octet-stream" },
+              body: bytes,
+            });
+            if (!up.ok) {
+              const txt = await up.text();
+              throw new Error(txt || "Upload failed");
+            }
+            const json = await up.json();
+            uploadUrl = String(json?.upload_url || "");
+          }
+          if (!uploadUrl) throw new Error("No audio provided");
+
+          const start = await fetch("https://api.assemblyai.com/v2/transcript", {
+            method: "POST",
+            headers: { authorization: assemblyKey, "content-type": "application/json" },
+            body: JSON.stringify({ audio_url: uploadUrl, speaker_labels: enableSpeakerLabels || false }),
+          });
+          if (!start.ok) {
+            const txt = await start.text();
+            throw new Error(txt || "Transcription start failed");
+          }
+          const started = await start.json();
+          id = String(started?.id || "");
+          if (!id) throw new Error("Failed to start transcription");
+        }
 
         let final: any = null;
         for (let attempt = 0; attempt < 120; attempt++) {
           await new Promise((r) => setTimeout(r, 2000));
-          const stat = await supabase.functions.invoke("transcribe-status", {
-            body: { id, enableSpeakerLabels },
-          });
-          if (stat.error) continue;
-          const payload = stat.data;
-          if (payload?.status === "completed") { final = payload; break; }
+          if (!useDirect) {
+            const stat = await supabase.functions.invoke("transcribe-status", { body: { id, enableSpeakerLabels } });
+            if (stat.error) continue;
+            const payload = stat.data;
+            if (payload?.status === "completed") { final = payload; break; }
+          } else {
+            const assemblyKey = (import.meta.env.VITE_ASSEMBLYAI_API_KEY as string | undefined) ||
+              (typeof window !== "undefined" ? window.localStorage.getItem("ASSEMBLYAI_KEY") || undefined : undefined);
+            const stat = await fetch(`https://api.assemblyai.com/v2/transcript/${id}`, { headers: { authorization: assemblyKey || "" } });
+            if (!stat.ok) continue;
+            const payload = await stat.json();
+            if (payload?.status === "completed") { final = payload; break; }
+            if (payload?.status === "error") { throw new Error(payload?.error || "Transcription failed"); }
+          }
         }
         if (!final) throw new Error("Transcription timeout - please try again");
-        data = { success: true, text: final.text, utterances: final.utterances, speakerCount: final.speakerCount };
+        data = useDirect ? final : { success: true, text: final.text, utterances: final.utterances, speakerCount: final.speakerCount };
       }
 
       if (invokeError) {
