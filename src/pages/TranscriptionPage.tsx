@@ -156,12 +156,27 @@ export default function TranscriptionPage() {
         requestBody.audioData = base64Data;
       }
 
+      let data: any = null;
+      let invokeError: any = null;
+
       if (!isSupabaseConfigured || !supabase) {
-        throw new Error("Service configuration missing: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY");
+        const resp = await fetch("/api/transcribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        });
+        if (!resp.ok) {
+          const msg = await resp.text();
+          throw new Error(msg || "Transcription request failed");
+        }
+        data = await resp.json();
+      } else {
+        const r = await supabase.functions.invoke("transcribe-audio", {
+          body: requestBody,
+        });
+        data = r.data;
+        invokeError = r.error;
       }
-      const { data, error: invokeError } = await supabase.functions.invoke("transcribe-audio", {
-        body: requestBody,
-      });
 
       if (invokeError) {
         console.error("Edge Function invocation error:", invokeError);
